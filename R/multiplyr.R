@@ -1,0 +1,59 @@
+#' Data Manipulation with Parellelism and Shared Memory Matrices
+#'
+#' @description
+#' Provides a new form of data frame backed by shared memory matrices and
+#' a way to manipulate them. Upon creation these data frames are shared
+#' across multiple local nodes to allow for simple parallel processing. Run the
+#' following command for a more thorough explanation: \code{vignette("basics")}
+#'
+#' @section Major differences from dplyr:
+#'
+#' \code{summarise} with dplyr will return a single number, but here it
+#' will return N values depending on how many nodes there are. Typically
+#' you should follow \code{summarise} with \code{\link{reduce}}, which is
+#' run locally.
+#'
+#' @section Standard dplyr-like functions:
+#' \tabular{ll}{
+#'     \code{\link{arrange}}     \tab Sort data \cr
+#'     \code{\link{distinct}}    \tab Select unique rows or unique combinations of variables \cr
+#'     \code{\link{filter}}      \tab Filter data \cr
+#'     \code{\link{group_by}}    \tab Group data \cr
+#'     \code{\link{group_sizes}} \tab Return size of groups \cr
+#'     \code{\link{groupwise}}   \tab Use grouped data (also known as \code{ungroup})\cr
+#'     \code{\link{mutate}}      \tab Change values of existing variables (and create new ones) \cr
+#'     \code{\link{rename}}      \tab Rename variables \cr
+#'     \code{\link{rowwise}}     \tab Use data as individual rows \cr
+#'     \code{\link{select}}      \tab Retain only specified variables \cr
+#'     \code{\link{slice}}       \tab Select rows by position\cr
+#'     \code{\link{summarise}}   \tab Summarise data \cr
+#'     \code{\link{transmute}}   \tab Change variables and drop all others \cr
+#' }
+#'
+#' @section Parallel functions:
+#' \tabular{ll}{
+#'     \code{\link{partition_even}}  \tab Partition data evenly amongst cluster nodes \cr
+#'     \code{\link{partition_group}} \tab Partition data so that each group is wholly on a node \cr
+#'     \code{\link{within_group}}    \tab Execute code within a group \cr
+#'     \code{\link{within_node}}     \tab Execute code within a group \cr
+#' }
+#'
+#' @section Additional data frame functions:
+#' \tabular{ll}{
+#'     \code{\link{Multiplyr}}   \tab Create new parallel data frame \cr
+#'     \code{\link{define}}      \tab Define new variables \cr
+#'     \code{\link{nsa}}         \tab No strings attached mode \cr
+#'     \code{\link{reduce}}      \tab Summarise locally only \cr
+#'     \code{\link{regroup}}     \tab Return to grouped data \cr
+#'     \code{\link{undefine}}    \tab Delete variables \cr
+#' }
+#'
+#' @importFrom bigmemory sub.big.matrix attach.big.matrix mwhich mpermute
+#' @importFrom bigmemory.sri describe
+#' @importFrom lazyeval all_dots lazy_dots lazy_eval
+#' @importFrom magrittr %>%
+#' @importFrom parallel makeCluster stopCluster clusterExport clusterEvalQ
+#' @importClassesFrom bigmemory big.matrix big.matrix.descriptor
+#' @docType package
+#' @name multiplyr
+NULL

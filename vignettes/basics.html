@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Jim Blundell" />
+
+<meta name="date" content="2016-05-15" />
+
+<title>Multiplyr basics</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+</style>
+
+
+
+<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%7D%0Apre%20%7B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Multiplyr basics</h1>
+<h4 class="author"><em>Jim Blundell</em></h4>
+<h4 class="date"><em>2016-05-15</em></h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The multiplyr package is intended to provide simple and transparent parallel processing functionality through an interface similar to one already familiar to many R users (dplyr):</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Construct a new data frame</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">G=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>), <span class="dt">length.out=</span><span class="dv">100</span>))
+
+<span class="co"># Group data by G</span>
+dat %&gt;%<span class="st"> </span><span class="kw">group_by</span> (G)
+
+<span class="co"># Summarise length(x) in each group and store in N</span>
+dat %&gt;%<span class="st"> </span><span class="kw">summarise</span> (<span class="dt">N =</span> <span class="kw">length</span>(x))</code></pre>
+<p>To those unfamiliar with dplyr: this package makes heavy use of the %&gt;% operator, which allows several operations to be chained together. dat %&gt;% … results in … being applied to the data frame called dat. This allows multiple operations to be chained together. For example:</p>
+<pre class="sourceCode r"><code class="sourceCode r">dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">y=</span><span class="dv">1</span>:<span class="dv">100</span>)
+
+dat %&gt;%<span class="st"> </span><span class="kw">filter</span>(x&lt;=<span class="dv">50</span>) %&gt;%<span class="st"> </span><span class="kw">mutate</span> (<span class="dt">y=</span>x*<span class="dv">2</span>) %&gt;%<span class="st"> </span><span class="kw">select</span> (y)</code></pre>
+<p>The details of what each of these functions are for is described elsewhere in this document.</p>
+<div id="multiplyr-is-a-reference-class" class="section level3">
+<h3>Multiplyr is a reference class</h3>
+<p>There is one surprising thing missing from the example code here, which is the almost complete absence of &lt;-, the assignment operator. Since these data frames represent shared memory, things like group_by modify it in place so assigning it back to the same object has no meaning. Attempting to assign the result of these to a different variable may have slightly unexpected behaviour. In the current version of this package only one data frame per cluster is supported.</p>
+</div>
+<div id="thinking-in-parallel" class="section level3">
+<h3>Thinking in parallel</h3>
+<p>Expressions executed in parallel behave rather differently than you may be used to. Consider the following:</p>
+<pre class="sourceCode r"><code class="sourceCode r">dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>)
+
+dat %&gt;%<span class="st"> </span><span class="kw">mutate</span> (<span class="dt">x=</span><span class="kw">length</span>(x):<span class="dv">1</span>)</code></pre>
+<p>Reading this through, you would expect x to now contain the numbers from 100 to 1 in descending order. However, the answer depends entirely on how many cluster nodes that you have; each cluster will execute length(x):1 on its own subset of x and store the result in shared memory. If you have 2 cluster nodes then this will produce the numbers 50 to 1 repeated twice. If the data had been grouped, then this expression would be executed once for each group.</p>
+</div>
+<div id="text-is-not-actually-text" class="section level3">
+<h3>Text is not actually text</h3>
+<p>From the outside, Multiplyr data frames will appear to work like standard R data frames. However, the way text is stored internally is to convert them to factors, which is effectively:</p>
+<ol style="list-style-type: decimal">
+<li>Sort the data alphabetically</li>
+<li>Find all the unique values and give them an ID number</li>
+<li>Replace the data with that ID number</li>
+<li>Store a lookup table mapping ID number to the actual text</li>
+</ol>
+<p>This has one major advantage in that numeric data is easier and faster to manipulate and pass around. The major disadvantage, however, is that if a column has a lot of unique values of text then there’s a large overhead in converting and passing to the cluster what these unique values are.</p>
+<p>I wouldn’t recommend using this package for data where you have columns with lots of unique values of text unless that text represents some sort of grouping.</p>
+</div>
+<div id="data-order-is-not-maintained" class="section level3">
+<h3>Data order is not maintained</h3>
+<p>The internal representation of the data is a matrix and the way that the matrix is divided up amongst nodes is to give each node a contiguous block of that matrix (or several blocks in the case of grouped data). The side effect of this is that data must be sorted in a particular way. If data need to be in a particular order at the end, then use the arrange command at the end of your manipulations.</p>
+</div>
+</div>
+<div id="creating-a-data-frame" class="section level2">
+<h2>Creating a data frame</h2>
+<p>Creating a multiplyr data frame is achieved by calling Multiplyr and providing a comma separated list of column names and their values. You may also optionally specify a number of unnamed columns to allocate (e.g. for future calls to mutate) using alloc=N, where N is the number of columns. If you desire a specific number of nodes in the cluster be created then this may be specified with cl=N:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create a new data frame with 2 columns called x and y</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">y=</span><span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">100</span>))
+
+<span class="co"># As above, but allocate space for 1 new column and create cluster with 2 nodes</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">y=</span><span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">100</span>), <span class="dt">alloc=</span><span class="dv">1</span>, <span class="dt">cl=</span><span class="dv">2</span>)
+
+<span class="co"># Convert back to standard data frame</span>
+dat.df &lt;-<span class="st"> </span><span class="kw">as.data.frame</span> (dat)
+dat.df &lt;-<span class="st"> </span>dat %&gt;%<span class="st"> </span><span class="kw">as.data.frame</span>()</code></pre>
+</div>
+<div id="manipulating" class="section level2">
+<h2>Manipulating</h2>
+<div id="create-new-columns-with-define" class="section level3">
+<h3>Create new columns with define</h3>
+<p>The first thing to note with creating new columns with a Multiplyr data frame is that the size of the underlying matrix is fixed at creation. This means that to create new columns you need to estimate in advance how many extra columns you might need. To allocate space for more columns on creation, use the alloc=N parameter of Multiplyr, where N is the number of extra columns to create. New columns are created with define, simply specifying their names and separating with commas.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create new data frame with space for 3 new columns</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">alloc=</span><span class="dv">3</span>)
+
+<span class="co"># Create 2 new columns named y and z</span>
+<span class="co"># Note that this define is actually not needed as mutate will define implicitly</span>
+dat %&gt;%<span class="st"> </span><span class="kw">define</span> (y, z)
+
+<span class="co"># Do things with new columns</span>
+dat %&gt;%<span class="st"> </span><span class="kw">mutate</span> (<span class="dt">y=</span>x*<span class="dv">2</span>, <span class="dt">z=</span><span class="kw">sqrt</span>(x))</code></pre>
+<p>As you will see in later sections, the above define operation was not actually technically necessary as mutate will create new columns if they do not already exist.</p>
+<p>One time where define is not superfluous is when creating columns that will store factors or text. For this, along with the name of the new column, you need to specify a template to copy in the form of newcolumn=template:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create new Multiplyr frame with two columns (A and P) with space for 3 more</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">A=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>), <span class="dt">each=</span><span class="dv">25</span>), 
+                  <span class="dt">P=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;p&quot;</span>, <span class="st">&quot;q&quot;</span>), <span class="dt">each=</span><span class="dv">50</span>), 
+                  <span class="dt">alloc=</span><span class="dv">3</span>)
+
+<span class="co"># Create new columns named newA and newP</span>
+dat %&gt;%<span class="st"> </span><span class="kw">define</span> (<span class="dt">newA=</span>A, <span class="dt">newP=</span>P)
+
+<span class="co"># Set their values</span>
+dat %&gt;%<span class="st"> </span><span class="kw">mutate</span> (<span class="dt">newA=</span><span class="st">&quot;A&quot;</span>, <span class="dt">newP=</span><span class="st">&quot;p&quot;</span>)</code></pre>
+</div>
+<div id="rename-columns-with-rename" class="section level3">
+<h3>Rename columns with rename</h3>
+<p>Renaming columns is easily achieved by specifying a list of newname=oldname pairs to rename:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create a new Multiplyr frame with variables named x, y and z</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">y=</span><span class="dv">100</span>:<span class="dv">1</span>, <span class="dt">z=</span><span class="kw">rnorm</span>(<span class="dv">100</span>))
+
+<span class="co"># Rename to p, q and r</span>
+dat %&gt;%<span class="st"> </span><span class="kw">rename</span> (<span class="dt">p=</span>x, <span class="dt">q=</span>y, <span class="dt">r=</span>z)</code></pre>
+</div>
+<div id="drop-existing-columns-with-undefine-or-select" class="section level3">
+<h3>Drop existing columns with undefine or select</h3>
+<p>There are two potential ways to drop columns from a data frame: specifying which columns to drop (undefine), or specifying which columns to keep (select):</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create Multiplyr data frame with columns named x, y, z and misc</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">y=</span><span class="dv">100</span>:<span class="dv">1</span>, <span class="dt">z=</span><span class="kw">rnorm</span>(<span class="dv">100</span>), <span class="dt">misc=</span><span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">100</span>))
+
+<span class="co"># Drop column named misc</span>
+dat %&gt;%<span class="st"> </span><span class="kw">undefine</span> (misc)
+
+<span class="co"># Keep only the x and y columns</span>
+dat %&gt;%<span class="st"> </span><span class="kw">select</span> (x, y)</code></pre>
+</div>
+</div>
+<div id="grouping" class="section level2">
+<h2>Grouping</h2>
+<div id="grouping-data" class="section level3">
+<h3>Grouping data</h3>
+<p>One of the main strengths of the manipulations on data with multiplyr (as it is with dplyr) is that data may be arranged in groups first, with operations then taking place on individual groups.</p>
+<p>Consider the experiment where 60 guinea pigs were given Vitamin C as either a supplement or in the form of orange juice at 3 different doses We can produce a table of summary statistics with the mean and standard deviation for each combination of supplement and dose as follows:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load data on guinea pig tooth growth:</span>
+<span class="co">#  len    Odontoblast (tooth cell) length</span>
+<span class="co">#  supp   Supplement (VC = Vit C supplement, OJ = Orange Juice)</span>
+<span class="co">#  dose   Dose in mg (0.5, 1 or 2)</span>
+<span class="co">#</span>
+<span class="kw">data</span> (ToothGrowth)
+
+<span class="co"># Convert into a Multiplyr data frame with space for 2 new columns</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (ToothGrowth, <span class="dt">alloc=</span><span class="dv">2</span>)
+
+<span class="co"># Group data by supplement and dose</span>
+dat %&gt;%<span class="st"> </span><span class="kw">group_by</span> (supp, dose)
+
+<span class="co"># Produce summary statistics</span>
+dat %&gt;%<span class="st"> </span><span class="kw">summarise</span> (<span class="dt">len.mean =</span> <span class="kw">mean</span>(len), <span class="dt">len.sd =</span> <span class="kw">sd</span>(len))</code></pre>
+</div>
+<div id="ungrouping-and-regrouping" class="section level3">
+<h3>Ungrouping and regrouping</h3>
+<p>Returning a data frame back to ungrouped form is achieved simply using ungroup. It is also possible to easily revert back to a grouped form using the same groupings with regroup.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load data on guinea pig tooth growth:</span>
+<span class="kw">data</span> (ToothGrowth)
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (ToothGrowth)
+
+<span class="co"># Group data by supplement and dose</span>
+dat %&gt;%<span class="st"> </span><span class="kw">group_by</span> (supp, dose)
+
+<span class="co"># Ungroups data</span>
+dat %&gt;%<span class="st"> </span><span class="kw">ungroup</span>()
+
+<span class="co"># Regroups data (implicitly by supplement and dose)</span>
+dat %&gt;%<span class="st"> </span><span class="kw">regroup</span>()</code></pre>
+</div>
+</div>
+<div id="manipulating-rows" class="section level2">
+<h2>Manipulating rows</h2>
+<div id="filtering-based-on-criteria-with-filter" class="section level3">
+<h3>Filtering based on criteria with filter</h3>
+<p>A basic operation when working with data is to select a subset of rows based on certain criteria.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load data on guinea pig tooth growth:</span>
+<span class="kw">data</span> (ToothGrowth)
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (ToothGrowth)
+
+<span class="co"># Group by supplement</span>
+dat %&gt;%<span class="st"> </span><span class="kw">group_by</span> (supp)
+
+<span class="co"># Select only guinea pigs with a dose &gt;= 1 mg/kg</span>
+dat %&gt;%<span class="st"> </span><span class="kw">filter</span> (dose &gt;=<span class="st"> </span><span class="dv">1</span>)
+
+<span class="co"># Produce summary</span>
+dat %&gt;%<span class="st"> </span><span class="kw">summarise</span> (<span class="dt">mean.len =</span> <span class="kw">mean</span>(len))</code></pre>
+</div>
+<div id="filtering-out-duplicates-with-distinct" class="section level3">
+<h3>Filtering out duplicates with distinct</h3>
+<p>Duplicate rows may be removed by calling distinct with no parameters. Alternatively, distinct may be used to find all unique combinations of a column or selection of columns:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create new Multiplyr data frame</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">A=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>), <span class="dt">each=</span><span class="dv">25</span>),
+                  <span class="dt">P=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;p&quot;</span>, <span class="st">&quot;q&quot;</span>), <span class="dt">length.out=</span><span class="dv">100</span>))
+
+<span class="co"># Filter so only one of each AxP combination</span>
+dat %&gt;%<span class="st"> </span><span class="kw">distinct</span>()
+
+<span class="co"># Filter so only one of each A</span>
+dat %&gt;%<span class="st"> </span><span class="kw">distinct</span>(A)</code></pre>
+<p>Note that if the data are grouped, then it will return one distinct entry per grouping.</p>
+</div>
+<div id="selecting-a-specific-subset-wih-slice" class="section level3">
+<h3>Selecting a specific subset wih slice</h3>
+<p>Selecting a subset of data can be achieved using the slice function, by specifying the rows numerically, by range or as a logical vector:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Construct a new data frame</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">G=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>), <span class="dt">length.out=</span><span class="dv">100</span>))
+
+<span class="co"># Return the first 10 rows only</span>
+dat %&gt;%<span class="st"> </span><span class="kw">slice</span> (<span class="dv">1</span>:<span class="dv">10</span>)
+
+<span class="co"># Return alternate rows</span>
+dat %&gt;%<span class="st"> </span><span class="kw">slice</span> (<span class="kw">rep</span>(<span class="kw">c</span>(<span class="ot">TRUE</span>, <span class="ot">FALSE</span>), <span class="dt">length.out=</span><span class="dv">10</span>))</code></pre>
+<p>By default slice will return a subset of those rows treating the data frame as a single contiguous entity. This does not always make sense when data have been grouped, so slice may also be used to obtain a subset of data in each group by specifying each=TRUE:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Construct a new data frame</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">G=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>), <span class="dt">length.out=</span><span class="dv">100</span>))
+
+<span class="co"># Group by G</span>
+dat %&gt;%<span class="st"> </span><span class="kw">group_by</span> (G)
+
+<span class="co"># Return the first 10 rows in each group</span>
+dat %&gt;%<span class="st"> </span><span class="kw">slice</span> (<span class="dv">1</span>:<span class="dv">10</span>, <span class="dt">each=</span><span class="ot">TRUE</span>)</code></pre>
+<p>Similarly, each=TRUE may be used to obtain a subset of data in each node where grouping has not been done:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Construct a new data frame</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">G=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>), <span class="dt">length.out=</span><span class="dv">100</span>))
+
+<span class="co"># Return the first 10 rows in each node</span>
+dat %&gt;%<span class="st"> </span><span class="kw">slice</span> (<span class="dv">1</span>:<span class="dv">10</span>, <span class="dt">each=</span><span class="ot">TRUE</span>)</code></pre>
+</div>
+<div id="sorting-data-with-arrange" class="section level3">
+<h3>Sorting data with arrange</h3>
+<p>Sorting data within columns is achieved with the arrange function, specifying the columns to sort by separated by commas (the extra columns are used to determine how to break ties). For example:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create new data frame</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">G=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>), <span class="dt">each=</span><span class="dv">25</span>), <span class="dt">x=</span><span class="dv">100</span>:<span class="dv">1</span>)
+
+<span class="co"># Sort by G, then by x</span>
+dat %&gt;%<span class="st"> </span><span class="kw">arrange</span> (G, x)</code></pre>
+</div>
+</div>
+<div id="manipulating-data" class="section level2">
+<h2>Manipulating data</h2>
+<div id="updating-values-with-mutate" class="section level3">
+<h3>Updating values with mutate</h3>
+<p>Modification of the actual data stored within a data frame is done through the use of mutate. Multiple mutation operations may be separated with a comma and are given in the form of colname=expression. If the column name specified does not exist, then mutate will attempt to implicitly define it:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Construct a new data frame with space for 2 new columns</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">alloc=</span><span class="dv">2</span>)
+
+<span class="co"># Update all cells in the x column to be twice their value</span>
+dat %&gt;%<span class="st"> </span><span class="kw">mutate</span> (<span class="dt">x=</span>x*<span class="dv">2</span>)
+
+<span class="co"># Create 2 new columns and populate them with data</span>
+dat %&gt;%<span class="st"> </span><span class="kw">mutate</span> (<span class="dt">y=</span>x*<span class="dv">2</span>, <span class="dt">z=</span><span class="kw">sqrt</span>(x))</code></pre>
+</div>
+<div id="updating-values-and-dropping-other-columns-with-transmute" class="section level3">
+<h3>Updating values and dropping other columns with transmute</h3>
+<p>The transmute function works in very much the same way as mutate, but drops any columns not explicitly specified. It’s effectively mutate, followed by select.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Construct a new data frame with space for 2 new columns</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">alloc=</span><span class="dv">2</span>)
+
+<span class="co"># Create new columns (y and z), drop x in the process</span>
+dat %&gt;%<span class="st"> </span><span class="kw">transmute</span> (<span class="dt">y=</span>x*<span class="dv">2</span>, <span class="dt">z=</span><span class="kw">sqrt</span>(x))</code></pre>
+</div>
+<div id="summarising-data-with-summarise-and-reduce" class="section level3">
+<h3>Summarising data with summarise and reduce</h3>
+<p>Summarising data is achieved using the summarise command, with each expression returning a single value. We could produce a summary table of mean and standard deviation of guinea pig tooth lengthdata grouped by supplement and dose with the following:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load data on guinea pig tooth growth:</span>
+<span class="kw">data</span> (ToothGrowth)
+
+<span class="co"># Convert into a Multiplyr data frame with space for 2 new columns</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (ToothGrowth, <span class="dt">alloc=</span><span class="dv">2</span>)
+
+<span class="co"># Group data by supplement and dose</span>
+dat %&gt;%<span class="st"> </span><span class="kw">group_by</span> (supp, dose)
+
+<span class="co"># Produce summary statistics</span>
+dat %&gt;%<span class="st"> </span><span class="kw">summarise</span> (<span class="dt">len.mean =</span> <span class="kw">mean</span>(len), <span class="dt">len.sd =</span> <span class="kw">sd</span>(len))</code></pre>
+<p>The results for when data are not grouped are slightly less straightforward. Consider the following:</p>
+<pre class="sourceCode r"><code class="sourceCode r">dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>)
+
+dat %&gt;%<span class="st"> </span><span class="kw">summarise</span> (<span class="dt">N=</span><span class="kw">sum</span>(x))</code></pre>
+<p>This will not produce a single result: it will produce one result for each cluster. Therefore, a second summarise has to be done, but in such a way that it is guaranteed to be executed once. This is done using the reduce function:</p>
+<pre class="sourceCode r"><code class="sourceCode r">dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>)
+
+dat %&gt;%<span class="st"> </span><span class="kw">summarise</span> (<span class="dt">N=</span><span class="kw">sum</span>(x)) %&gt;%<span class="st"> </span><span class="kw">reduce</span>(<span class="dt">N=</span><span class="kw">sum</span>(x))</code></pre>
+</div>
+<div id="executing-arbitrary-code-using-within_node-and-within_group" class="section level3">
+<h3>Executing arbitrary code using within_node and within_group</h3>
+<p>Two functions are provided for making parallel processing more convenient. The first of these is within_node, which executes a block of code once for each node in a cluster. It acts as a persistent environment, so that subsequent calls to within_node or other operations, such as summarise may be make use of variables created within that environment:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Construct a new data frame</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>)
+
+<span class="co"># Define y and z to be new columns</span>
+dat %&gt;%<span class="st"> </span><span class="kw">define</span>(y, z) 
+
+<span class="co"># Execute the following code within each node</span>
+dat %&gt;%<span class="st"> </span><span class="kw">within_node</span> ({
+    y &lt;-<span class="st"> </span>x *<span class="st"> </span><span class="dv">10</span>
+    z &lt;-<span class="st"> </span><span class="kw">sqrt</span>(y)
+})</code></pre>
+<p>Similarly, code may be executed within each group using within_group:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Construct a new data frame</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">100</span>, <span class="dt">G=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>), <span class="dt">length.out=</span><span class="dv">100</span>))
+
+<span class="co"># Group by G</span>
+dat %&gt;%<span class="st"> </span><span class="kw">group_by</span> (G)
+
+<span class="co"># Execute the following block of code within each group</span>
+dat %&gt;%<span class="st"> </span><span class="kw">within_group</span>({
+    N &lt;-<span class="st"> </span><span class="kw">length</span>(x)
+    xbar &lt;-<span class="st"> </span><span class="kw">sum</span>(x) /<span class="st"> </span>N
+})
+
+<span class="co"># Export the data</span>
+dat %&gt;%<span class="st"> </span><span class="kw">summarise</span>(<span class="dt">N=</span>N, <span class="dt">xbar=</span>xbar)</code></pre>
+<p>The necessity of exporting the data using summarise rather than define may not be immediately obvious, now why does multiplyr not simply create N and xbar as new columns by default in the within_node or within_group code. The role of within_group and within_node is to provide an environment for executing code where variables are bound to the columns to allow for more complex operations, e.g. running models. This means that there is no restriction on the type of data that may be stored, i.e. model objects. For example:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create data frame</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">G =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>), <span class="dt">each=</span><span class="dv">50</span>),
+                  <span class="dt">m =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">10</span>), <span class="dt">each=</span><span class="dv">50</span>),
+                  <span class="dt">alloc=</span><span class="dv">1</span>)
+
+<span class="co"># Group by G</span>
+dat %&gt;%<span class="st"> </span><span class="kw">group_by</span> (G)
+
+<span class="co"># Generate some random data in x with mean of m</span>
+dat %&gt;%<span class="st"> </span><span class="kw">mutate</span> (<span class="dt">x=</span><span class="kw">rnorm</span>(<span class="kw">length</span>(m), <span class="dt">mean=</span>m))
+
+<span class="co"># Fit a linear model with just an intercept to x in each group</span>
+dat %&gt;%<span class="st"> </span><span class="kw">within_group</span> ({
+    mdl &lt;-<span class="st"> </span><span class="kw">lm</span> (x ~<span class="st"> </span><span class="dv">1</span>)
+})
+
+<span class="co"># Extract intercept and store it in x.mean</span>
+dat %&gt;%<span class="st"> </span><span class="kw">summarise</span> (<span class="dt">x.mean =</span> <span class="kw">coef</span>(mdl)[[<span class="dv">1</span>]])</code></pre>
+</div>
+</div>
+<div id="no-strings-attached" class="section level2">
+<h2>No strings attached</h2>
+<p>Data within a Multiplyr data frame is internally represented numerically, regardless of whether it’s actually numeric or not. At first this may seem like a limitation, but can potentially make data manipulation very, very fast. When data in a Multiplyr data frame is updated, e.g. setting a value to “A”, this results in “A” being looked up for that column’s factor levels and then assigned to the underlying numeric matrix.</p>
+<p>However, there are times that the actual, specific content of the column is not relevant. One way to speed up certain operations is therefore to put the data frame into “no strings attached” mode, which disables any of these look-ups. For example:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Construct a new data frame</span>
+dat &lt;-<span class="st"> </span><span class="kw">Multiplyr</span> (<span class="dt">G=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>), <span class="dt">length.out=</span><span class="dv">100</span>),
+                  <span class="dt">H=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;p&quot;</span>, <span class="st">&quot;q&quot;</span>, <span class="st">&quot;r&quot;</span>, <span class="st">&quot;s&quot;</span>), <span class="dt">each=</span><span class="dv">25</span>))
+<span class="co"># Display data</span>
+dat[<span class="st">&quot;G&quot;</span>]
+dat[<span class="st">&quot;H&quot;</span>]
+
+<span class="co"># Switch into NSA mode</span>
+dat %&gt;%<span class="st"> </span><span class="kw">nsa</span>()
+dat[<span class="st">&quot;G&quot;</span>]
+dat[<span class="st">&quot;H&quot;</span>]
+
+<span class="co"># Do some things</span>
+dat %&gt;%<span class="st"> </span><span class="kw">mutate</span> (<span class="dt">G=</span><span class="kw">max</span>(G))
+
+<span class="co"># Switch back</span>
+dat %&gt;%<span class="st"> </span><span class="kw">nsa</span>(<span class="ot">FALSE</span>)
+dat[<span class="st">&quot;G&quot;</span>]
+dat[<span class="st">&quot;H&quot;</span>]</code></pre>
+</div>
+<div id="speed-considerationslimitations" class="section level2">
+<h2>Speed considerations/limitations</h2>
+<p>There are some things that are particularly slow with a Multiplyr data frame. In particular, the way in which character data is handled. Any character data is effectively converted into a factor transparently. This means that if there is a column of text where every cell is unique, then this is passed on in its entirety, which is very slow.</p>
+<p>The initial creation of a parallel data frame is slow: the reason for this is that in the background a new local cluster is started. If you have 4 cores or CPUs then 4 new instances of R will be started, which can take a few seconds.</p>
+<p>This package is not (yet!) a complete replacement for dplyr and there are some notable things missing, most notably neat interfacing with SQL databases. Currently only one parallel data frame per cluster is supported, so there also are’t any join operations.</p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
