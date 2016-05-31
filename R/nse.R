@@ -6,7 +6,8 @@
 #'
 #' This function takes a parallel data frame and sorts it by the first
 #' column specified. If there are any ties then it sorts by the second,
-#' and so on.
+#' and so on. Use \code{desc(x)} to specify that x should be sorted in
+#' descending order (see \code{\link{desc}}).
 #'
 #' @template nse
 #' @family row manipulations
@@ -19,7 +20,7 @@
 #' dat %>% shutdown()
 #' }
 arrange <- function (.self, ...) {
-    .dots <- lazyeval::lazy_dots(...)
+    .dots <- dotscapture (...)
     arrange_ (.self, .dots=.dots)
 }
 
@@ -38,7 +39,7 @@ arrange <- function (.self, ...) {
 #' @family column manipulations
 #' @export
 define <- function (.self, ...) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     define_ (.self, .dots=.dots)
 }
 
@@ -66,7 +67,7 @@ define <- function (.self, ...) {
 #' dat %>% shutdown()
 #' }
 distinct <- function (.self, ..., auto_compact = NULL) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     distinct_ (.self, .dots=.dots, auto_compact=auto_compact)
 }
 
@@ -91,7 +92,7 @@ distinct <- function (.self, ..., auto_compact = NULL) {
 #' dat %>% shutdown()
 #' }
 filter <- function (.self, ..., auto_compact=NULL) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     filter_ (.self, .dots=.dots, auto_compact=auto_compact)
 }
 
@@ -124,7 +125,7 @@ filter <- function (.self, ..., auto_compact=NULL) {
 #' dat %>% shutdown()
 #' }
 group_by <- function (.self, ..., auto_partition=NULL) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     group_by_ (.self, .dots=.dots, auto_partition=auto_partition)
 }
 
@@ -142,7 +143,7 @@ group_by <- function (.self, ..., auto_partition=NULL) {
 #' dat %>% shutdown()
 #' }
 mutate <- function (.self, ...) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     mutate_ (.self, .dots=.dots)
 }
 
@@ -166,7 +167,7 @@ mutate <- function (.self, ...) {
 #' dat %>% shutdown()
 #' }
 partition_group <- function (.self, ...) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     partition_group_ (.self, .dots=.dots)
 }
 
@@ -194,7 +195,7 @@ partition_group <- function (.self, ...) {
 #' dat %>% shutdown()
 #' }
 reduce <- function (.self, ..., auto_compact=NULL) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     reduce_ (.self, .dots=.dots, auto_compact=auto_compact)
 }
 
@@ -213,7 +214,7 @@ reduce <- function (.self, ..., auto_compact=NULL) {
 #' dat %>% shutdown()
 #' }
 rename <- function (.self, ...) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     rename_ (.self, .dots=.dots)
 }
 
@@ -231,7 +232,7 @@ rename <- function (.self, ...) {
 #' dat %>% shutdown()
 #' }
 select <- function (.self, ...) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     select_ (.self, .dots=.dots)
 }
 
@@ -250,7 +251,7 @@ select <- function (.self, ...) {
 #' dat %>% shutdown()
 #' }
 summarise <- function (.self, ..., auto_compact=NULL) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     summarise_ (.self, .dots=.dots, auto_compact=auto_compact)
 }
 
@@ -268,7 +269,7 @@ summarise <- function (.self, ..., auto_compact=NULL) {
 #' dat %>% shutdown()
 #' }
 transmute <- function (.self, ...) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     transmute_ (.self, .dots=.dots)
 }
 
@@ -286,7 +287,7 @@ transmute <- function (.self, ...) {
 #' dat %>% shutdown()
 #' }
 undefine <- function (.self, ...) {
-    .dots <- lazyeval::lazy_dots (...)
+    .dots <- dotscapture (...)
     undefine_ (.self, .dots=.dots)
 }
 

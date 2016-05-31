@@ -105,7 +105,7 @@ test_that ("group_by() can group by one level", {
     expect_equal (dat$bm[, dat$groupcol], dat[, "G"])
     expect_equal (dat$group.cols, match("G", dat$col.names))
     expect_true (dat$grouped)
-    expect_equal (dat$group_sizes, rep(25, 4))
+    expect_equal (group_sizes(dat), rep(25, 4))
     expect_equal (dat$group_max, 4)
 
     rm (dat)
@@ -121,7 +121,7 @@ test_that ("group_by() run a second time only groups by the second set of factor
     expect_equal (dat$bm[, dat$groupcol], dat[, "G"])
     expect_equal (dat$group.cols, match("G", dat$col.names))
     expect_true (dat$grouped)
-    expect_equal (dat$group_sizes, rep(50, 2))
+    expect_equal (group_sizes(dat), rep(50, 2))
     expect_equal (dat$group_max, 2)
 
     rm (dat)
@@ -134,7 +134,7 @@ test_that ("group_by() can group by multiple levels", {
     expect_equal (dat$bm[, dat$groupcol], rep(1:20, each=5))
     expect_equal (dat$group.cols, match(c("G", "H"), dat$col.names))
     expect_true (dat$grouped)
-    expect_equal (length(dat$group_sizes), 20)
+    expect_equal (length(group_sizes(dat)), 20)
     expect_equal (sum(group_sizes(dat)), 100)
     expect_equal (dat$group_max, 20)
 
@@ -150,7 +150,7 @@ test_that ("group_by() can group uneven sizes", {
     expect_equal (dat$bm[, dat$groupcol], dat[, "G"])
     expect_equal (dat$group.cols, match("G", dat$col.names))
     expect_true (dat$grouped)
-    expect_equal (dat$group_sizes, c(7, 6))
+    expect_equal (group_sizes(dat), c(7, 6))
     expect_equal (dat$group_max, 2)
 
     rm (dat)
@@ -163,7 +163,7 @@ test_that ("group_by() can group when size of group=1", {
     expect_equal (dat$bm[, dat$groupcol], 1:4)
     expect_equal (dat$group.cols, match(c("G", "H"), dat$col.names))
     expect_true (dat$grouped)
-    expect_equal (dat$group_sizes, rep(1, 4))
+    expect_equal (group_sizes(dat), rep(1, 4))
     expect_equal (dat$group_max, 4)
 
     rm (dat)
@@ -176,14 +176,14 @@ test_that ("group_by() can group a single item", {
     expect_equal (dat$bm[, dat$groupcol], 1)
     expect_equal (dat$group.cols, match("G", dat$col.names))
     expect_true (dat$grouped)
-    expect_equal (dat$group_sizes, 1)
+    expect_equal (group_sizes(dat), 1)
     expect_equal (dat$group_max, 1)
 
     dat %>% group_by (G, H)
     expect_equal (dat$bm[, dat$groupcol], 1)
     expect_equal (dat$group.cols, match(c("G", "H"), dat$col.names))
     expect_true (dat$grouped)
-    expect_equal (dat$group_sizes, 1)
+    expect_equal (group_sizes(dat), 1)
     expect_equal (dat$group_max, 1)
 
     rm (dat)
@@ -205,22 +205,28 @@ test_that ("group_by() maintains data integrity across cluster nodes", {
 
     res.x <- do.call (c, dat$cluster_eval({
         out <- c()
-        for (i in 1:length(.groups)) {
-            out <- c(out, .grouped[[i]][, "x"])
+        for (g in .local$group) {
+            .local$group_restrict (g)
+            out <- c(out, .local[, "x"])
+            .local$group_restrict ()
         }
         out
     }))
     res.y <- do.call (c, dat$cluster_eval ({
         out <- c()
-        for (i in 1:length(.groups)) {
-            out <- c(out, .grouped[[i]][, "y"])
+        for (g in .local$group) {
+            .local$group_restrict (g)
+            out <- c(out, .local[, "y"])
+            .local$group_restrict ()
         }
         out
     }))
     res.G <- do.call (c, dat$cluster_eval ({
         out <- c()
-        for (i in 1:length(.groups)) {
-            out <- c(out, .grouped[[i]][, "G"])
+        for (g in .local$group) {
+            .local$group_restrict (g)
+            out <- c(out, .local[, "G"])
+            .local$group_restrict ()
         }
         out
     }))
@@ -306,17 +312,14 @@ test_that ("regroup() works appropriately", {
 
     expect_equal (dat$group.cols, match("G", dat$col.names))
     expect_true (dat$grouped)
-    expect_equal (dat$group_sizes, rep(25, 4))
+    expect_equal (group_sizes(dat), rep(25, 4))
     expect_equal (dat$group_max, 4)
 
     res <- do.call (c, dat$cluster_eval(.local$group))
     expect_equal (sort(res), 1:4)
 
-    res <- do.call (c, dat$cluster_eval (length(.grouped)))
+    res <- do.call (c, dat$cluster_eval (length(.local$group)))
     expect_equal (res, c(2, 2))
-
-    res <- do.call (c, dat$cluster_eval (c(nrow(.grouped[[1]]$bm), nrow(.grouped[[2]]$bm))))
-    expect_equal (res, rep(25, 4))
 
     res <- do.call (c, dat$cluster_eval (.local$grouped))
     expect_equal (res, c(TRUE, TRUE))
@@ -347,6 +350,57 @@ test_that ("regroup() gives error if no previous group or if groupcol modified",
 
     rm (dat)
 })
+
+test_that ("n() throws an error when not called from a cluster", {
+    expect_error (n(), "within")
+})
+
+test_that ("n() returns the number of items in a node (unfiltered)", {
+    dat <- Multiplyr (x=1:100, alloc=1, cl=cl2)
+    dat %>% summarise (N=n())
+    expect_equal (dat["N"], c(50, 50))
+    rm (dat)
+})
+
+test_that ("n() returns the number of items in a node (filtered)", {
+    dat <- Multiplyr (x=1:100, auto_compact=FALSE, alloc=1, cl=cl2)
+    dat %>% filter (x<=75)
+    dat %>% summarise (N=n())
+    expect_equal (dat["N"], c(50, 25))
+    rm (dat)
+})
+
+test_that ("n() returns the number of items in a group (unfiltered)", {
+    dat <- Multiplyr (x=1:100, G=rep(1:4, each=25), cl=cl2, alloc=1)
+    dat %>% group_by (G)
+    dat %>% summarise (N=n())
+    expect_equal (dat["N"], rep(25, 4))
+    rm (dat)
+})
+
+test_that ("n() returns the number of items in a group (filtered)", {
+    dat <- Multiplyr (x=1:100, G=rep(1:4, each=25), cl=cl2, alloc=1, auto_compact=FALSE)
+    dat %>% group_by (G)
+    dat %>% filter (x <= 50)
+    dat %>% summarise (N=n())
+    expect_equal (dat["N"], c(25, 25, 0, 0))
+    rm (dat)
+})
+
+test_that ("n_groups() returns number of groups", {
+    dat <- Multiplyr (x=1:100, G=rep(1:4, each=25), cl=cl2)
+    expect_equal (n_groups(dat), 0)
+    dat %>% group_by (G)
+    expect_equal (n_groups(dat), 4)
+    dat %>% ungroup()
+    expect_equal (n_groups(dat), 0)
+    dat %>% regroup()
+    expect_equal (n_groups(dat), 4)
+    rm (dat)
+})
+
+#Attempt to stop "no function to return from, jumping to top level"
+gc()
 
 parallel::stopCluster(cl1)
 parallel::stopCluster(cl2)

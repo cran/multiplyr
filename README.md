@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/jeblundell/multiplyr.svg?branch=develop)](https://travis-ci.org/jeblundell/multiplyr) [![](http://www.r-pkg.org/badges/version/multiplyr)](https://cran.r-project.org/package=multiplyr) [![](http://cranlogs.r-pkg.org/badges/grand-total/multiplyr)](https://cran.r-project.org/package=multiplyr)
+
+Overview
+--------
+
 multiplyr provides a simple interface for manipulating data combined with easy parallel processing capabilities. It's intended that this works very similarly (eventually almost interchangably) with the dplyr package, as many people may be familiar with that already.
 
 ``` r
@@ -23,22 +28,27 @@ Run the following code once multiplyr is installed for more details:
 vignette ("basics")
 ```
 
-Roadmap
--------
+Installation
+------------
 
-### 0.1.1
+Install latest version from CRAN:
 
--   Any new bugfixes from first submission
--   Optimisations
--   Minor dplyr functions not already implemented
--   arrange descending
--   Support for reading data tables
--   alloc\_rows= parameter to Multiplyr
+``` r
+install.packages ("multiplyr")
+```
 
-### 0.2
+Development
+-----------
 
--   Non-local cluster nodes
--   Remote read.csv
--   Matrix operations (+/- GPU)
--   SQL
--   Joins and other set operations
+Install latest stable development version:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("jeblundell/multiplyr", ref="stable", build_vignettes = TRUE)
+```
+
+### Branches
+
+-   master: represents the version currently in CRAN
+-   stable: the latest commit from develop that passes all tests
+-   develop: current state of development
